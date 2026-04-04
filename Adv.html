@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Gold Coast Media · Fort Myers Business Hub</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #0a0a0a;
+      font-family: 'Inter', sans-serif;
+      color: #eee;
+      padding: 2rem 1.5rem;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .hero {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #f5b042, #ffdd99);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .location-badge {
+      background: rgba(245,176,66,0.15);
+      border: 1px solid rgba(245,176,66,0.4);
+      display: inline-block;
+      padding: 0.3rem 1.2rem;
+      border-radius: 40px;
+      margin-top: 0.6rem;
+      font-size: 0.9rem;
+    }
+    .sub {
+      color: #aaa;
+      font-size: 0.85rem;
+      margin-top: 0.6rem;
+    }
+    /* 4x4 grid - exactly 4 columns on desktop */
+    .ads-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.8rem;
+      margin: 2rem 0 3rem;
+    }
+    .ad-card {
+      background: #111217;
+      border-radius: 1.5rem;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid #2a2a2e;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .ad-card:hover {
+      transform: translateY(-4px);
+      border-color: #f5b042;
+      box-shadow: 0 12px 25px -8px rgba(245,176,66,0.2);
+    }
+    .card-icon {
+      background: linear-gradient(115deg, #1a1a22, #0f0f14);
+      text-align: center;
+      padding: 1.2rem 0.5rem;
+      border-bottom: 1px solid #2c2c34;
+    }
+    .card-icon i {
+      font-size: 2rem;
+      color: #f5b042;
+    }
+    .card-content {
+      padding: 1rem 1rem 0.8rem;
+      flex: 1;
+    }
+    .card-content h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+    .ad-desc {
+      font-size: 0.8rem;
+      color: #bbb;
+      line-height: 1.4;
+      margin-bottom: 0.8rem;
+    }
+    .ad-url-preview {
+      font-size: 0.65rem;
+      font-family: monospace;
+      background: #0a0a0e;
+      padding: 0.3rem 0.5rem;
+      border-radius: 20px;
+      color: #f5b042;
+      word-break: break-all;
+      border: 1px solid #222;
+      margin-top: 0.5rem;
+    }
+    .card-footer {
+      padding: 0.8rem 1rem 1rem;
+    }
+    .visit-btn {
+      display: inline-block;
+      background: #f5b042;
+      color: #0a0a0a;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      text-align: center;
+      transition: 0.2s;
+      width: 100%;
+    }
+    .visit-btn.disabled {
+      background: #3a3a44;
+      color: #888;
+      pointer-events: none;
+    }
+    .visit-btn:hover:not(.disabled) {
+      background: #ffcf7a;
+      transform: scale(1.02);
+    }
+    .admin-panel {
+      background: #0e0e12;
+      border-radius: 2rem;
+      margin-top: 3rem;
+      padding: 1.5rem;
+      border: 1px solid #f5b04240;
+      display: none;
+    }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .admin-header h2 {
+      color: #f5b042;
+      font-size: 1.4rem;
+    }
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.2rem;
+      max-height: 500px;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+    .admin-card {
+      background: #1a1a22;
+      border-radius: 1.2rem;
+      padding: 1rem;
+      border: 1px solid #2c2c34;
+    }
+    .admin-card input, .admin-card textarea {
+      width: 100%;
+      background: #0a0a0e;
+      border: 1px solid #333;
+      border-radius: 1rem;
+      padding: 0.5rem 0.8rem;
+      margin: 0.3rem 0;
+      color: white;
+      font-family: inherit;
+      font-size: 0.8rem;
+    }
+    .admin-card button {
+      background: #f5b042;
+      border: none;
+      padding: 0.4rem 1rem;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    .close-admin {
+      background: #2a2a34;
+      border: none;
+      color: #f5b042;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      cursor: pointer;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.7rem;
+      color: #6c6c7a;
+      border-top: 1px solid #1f1f28;
+      padding-top: 1.5rem;
+    }
+    @media (max-width: 1000px) {
+      .ads-grid { grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    }
+    @media (max-width: 750px) {
+      .ads-grid { grid-template-columns: repeat(2, 1fr); }
+      body { padding: 1rem; }
+    }
+    @media (max-width: 500px) {
+      .ads-grid { grid-template-columns: 1fr; }
+    }
+    .admin-toggle {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 1rem;
+    }
+    .admin-toggle button {
+      background: transparent;
+      border: 1px solid #f5b042;
+      color: #f5b042;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="hero">
+    <h1><i class="fas fa-chart-line"></i> GOLD COAST MEDIA</h1>
+    <div class="location-badge"><i class="fas fa-map-marker-alt"></i> Fort Myers, FL · Local Business Network</div>
+    <div class="sub">Premium advertising spaces — 16 prime spots | Click any ad to visit</div>
+  </div>
+
+  <div class="admin-toggle">
+    <button id="openAdminBtn"><i class="fas fa-lock"></i> Admin Backend (Edit Ads)</button>
+  </div>
+
+  <div id="adsGrid" class="ads-grid"></div>
+
+  <div id="adminPanel" class="admin-panel">
+    <div class="admin-header">
+      <h2><i class="fas fa-tools"></i> Ad Manager · Edit All 16 Ads</h2>
+      <button id="closeAdminBtn" class="close-admin"><i class="fas fa-times"></i> Close</button>
+    </div>
+    <div id="adminFormsContainer" class="admin-grid"></div>
+    <div style="margin-top: 1rem; text-align: right;">
+      <button id="resetAllAdsBtn" style="background:#3a2a1a; border:none; padding:0.5rem 1rem; border-radius:30px; color:#f5b042;"><i class="fas fa-undo"></i> Reset to Default (restore original links)</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    <i class="fas fa-gavel"></i> Licensed for local business advertising · All data stored locally · Ft. Myers, FL<br>
+    © 2025 Gold Coast Media — 4x4 premium ad grid | Edit from admin backend or modify the AD_LIST array in HTML source
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // 🔧 EASY EDIT: Modify the array below to change any ad.
+  // Each ad has: title, description, url.
+  // There are 16 slots (4 rows x 4 columns).
+  // ============================================================
+  const AD_LIST = [
+    { title: "Fowler Street Grill", description: "Great food, local vibe in Ft. Myers", url: "https://fowlerstreetgrill.com" },
+    { title: "Cafe & Maps", description: "https://maps.app.goo.gl/TZdWshZBhMPYpUVCA", url: "https://maps.app.goo.gl/TZdWshZBhMPYpUVCA" },
+    { title: "Maaco Auto Painting", description: "Affordable collision & paint services", url: "https://maaco.com" },
+    { title: "PeopleReady Naples", description: "Staffing & employment – Naples location", url: "https://www.peopleready.com/location/naples-fl-2335/?utm_source=source_google_business&utm_medium=organic&utm_campaign=yext&utm_content=Naples_FL_2335" },
+    { title: "Popeyes", description: "Popeyes Louisiana Kitchen", url: "https://maps.app.goo.gl/DD9fRJkMyAnFW9kw6" },
+    { title: "Subway", description: "Subway restaurant location", url: "https://maps.app.goo.gl/ToFTzrCXytH8mEmf6" },
+    { title: "Irie Jamaican Cuisine", description: "Authentic Jamaican food", url: "https://maps.app.goo.gl/SWgU91so9xi6Gami7" },
+    // ========== SLOTS 8 to 16 (blank placeholders, edit as needed) ==========
+    { title: "Aleahs bailbonds", description: "Bailbond", url: "https://share.google/oTFSN92k9EbDq1GgT" },
+    { title: "Barber & Beauty", description: "Grooming services", url: "https://maps.app.goo.gl/5BRCL1NkQdiEYFNV9" },
+    { title: "Passport services", description: "Passport application services", url: "https://maps.app.goo.gl/5BRCL1NkQdiEYFNV9" },
+    { title: "Childcare", description: "Childcare daycare", url: "https://maps.app.goo.gl/5BRCL1NkQdiEYFNV9" },
+    { title: "Bluebird", description: "Bluebird transportation", url: "https://share.google/t3VHxPxwPhYyrOiGY" },
+    { title: "Ticket Outlet", description: "Ticket sales and distribution", url: "https://mavely.app.link/NNx9w3urF1b" },
+    { title: "Party supplies", description: "Party supplies and rentals", url: "https://mavely.app.link/0cUBTRYb31b" },
+    { title: "Madina", description: "Car Sales", url: "https://www.madinaautobrokers.com/" },
+    { title: "Car Sales", description: "Good deals good wheels", url: "https://www.fortmyersmotorsfl.com/" }
+  ];
+
+  // Ensure exactly 16 ads (pad with defaults if needed)
+  while (AD_LIST.length < 16) {
+    AD_LIST.push({ title: `Ad Space ${AD_LIST.length+1}`, description: "Edit this ad", url: "" });
+  }
+  // Trim to first 16
+  const FINAL_ADS = AD_LIST.slice(0, 16);
+
+  // ========== DO NOT EDIT BELOW UNLESS YOU KNOW WHAT YOU'RE DOING ==========
+  let ads = JSON.parse(JSON.stringify(FINAL_ADS));
+  let adminVisible = false;
+
+  function loadAds() {
+    const stored = localStorage.getItem('ftmyers_16ads');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length === 16) ads = parsed;
+        else ads = JSON.parse(JSON.stringify(FINAL_ADS));
+      } catch(e) { ads = JSON.parse(JSON.stringify(FINAL_ADS)); }
+    } else {
+      ads = JSON.parse(JSON.stringify(FINAL_ADS));
+    }
+    renderAds();
+    if (adminVisible) renderAdminForms();
+  }
+
+  function persistAds() { localStorage.setItem('ftmyers_16ads', JSON.stringify(ads)); }
+
+  function updateAd(index, newTitle, newDesc, newUrl) {
+    if (index >= 0 && index < ads.length) {
+      ads[index].title = newTitle.trim() || `Ad Space ${index+1}`;
+      ads[index].description = newDesc.trim() || "Click edit to add description";
+      ads[index].url = newUrl.trim();
+      persistAds();
+      renderAds();
+      if (adminVisible) renderAdminForms();
+    }
+  }
+
+  function resetToDefault() {
+    ads = JSON.parse(JSON.stringify(FINAL_ADS));
+    persistAds();
+    renderAds();
+    if (adminVisible) renderAdminForms();
+  }
+
+  function renderAds() {
+    const grid = document.getElementById('adsGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    ads.forEach((ad, idx) => {
+      const card = document.createElement('div');
+      card.className = 'ad-card';
+      const hasValidUrl = ad.url && ad.url.trim() !== "" && (ad.url.startsWith('http://') || ad.url.startsWith('https://'));
+      const displayUrl = (ad.url && ad.url !== "") ? (ad.url.length > 45 ? ad.url.substring(0, 42) + '...' : ad.url) : "No URL set";
+      card.innerHTML = `
+        <div class="card-icon"><i class="fas fa-ad"></i></div>
+        <div class="card-content">
+          <h3>${escapeHtml(ad.title)}</h3>
+          <div class="ad-desc">${escapeHtml(ad.description)}</div>
+          <div class="ad-url-preview"><i class="fas fa-link"></i> ${escapeHtml(displayUrl)}</div>
+        </div>
+        <div class="card-footer">
+          <a href="${hasValidUrl ? ad.url : 'javascript:void(0)'}" target="_blank" rel="noopener noreferrer" class="visit-btn ${!hasValidUrl ? 'disabled' : ''}">
+            <i class="fas fa-external-link-alt"></i> ${hasValidUrl ? 'Visit Ad' : 'No Link Set'}
+          </a>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function renderAdminForms() {
+    const container = document.getElementById('adminFormsContainer');
+    if (!container) return;
+    container.innerHTML = '';
+    ads.forEach((ad, idx) => {
+      const formDiv = document.createElement('div');
+      formDiv.className = 'admin-card';
+      formDiv.innerHTML = `
+        <div style="font-weight:bold; margin-bottom:6px;">#${idx+1} — ${escapeHtml(ad.title)}</div>
+        <input type="text" id="adminTitle_${idx}" value="${escapeHtml(ad.title)}" placeholder="Ad Title">
+        <textarea id="adminDesc_${idx}" rows="2" placeholder="Description">${escapeHtml(ad.description)}</textarea>
+        <input type="url" id="adminUrl_${idx}" value="${escapeHtml(ad.url)}" placeholder="https://example.com">
+        <button class="save-ad-btn" data-idx="${idx}"><i class="fas fa-save"></i> Save Changes</button>
+      `;
+      container.appendChild(formDiv);
+    });
+    document.querySelectorAll('.save-ad-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(btn.getAttribute('data-idx'));
+        const titleInput = document.getElementById(`adminTitle_${idx}`);
+        const descInput = document.getElementById(`adminDesc_${idx}`);
+        const urlInput = document.getElementById(`adminUrl_${idx}`);
+        if (titleInput && descInput && urlInput) {
+          updateAd(idx, titleInput.value, descInput.value, urlInput.value);
+        }
+      });
+    });
+  }
+
+  let adminPassword = "admin123";
+  function showAdminWithAuth() {
+    const pwd = prompt("Enter admin password to edit ads:", "");
+    if (pwd === adminPassword) {
+      adminVisible = true;
+      document.getElementById('adminPanel').style.display = 'block';
+      renderAdminForms();
+    } else if (pwd !== null) alert("Incorrect password. Access denied.");
+  }
+  function closeAdmin() { adminVisible = false; document.getElementById('adminPanel').style.display = 'none'; }
+  function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadAds();
+    document.getElementById('openAdminBtn')?.addEventListener('click', showAdminWithAuth);
+    document.getElementById('closeAdminBtn')?.addEventListener('click', closeAdmin);
+    document.getElementById('resetAllAdsBtn')?.addEventListener('click', () => {
+      if (confirm("⚠️ Reset all 16 ads to the original list from AD_LIST?")) resetToDefault();
+    });
+  });
+</script>
+</body>
+</html>
