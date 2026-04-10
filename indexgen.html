@@ -1,58 +1,121 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>AI Content Engine</title>
+<title>AI Content Engine Pro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 body {
+  margin: 0;
   font-family: Arial;
-  background: #0d0d0d;
+  background: radial-gradient(circle at top, #1a1a1a, #0a0a0a);
   color: white;
+}
+
+/* HEADER */
+header {
+  padding: 20px;
   text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  background: #111;
+  border-bottom: 1px solid #222;
+}
+
+/* DASHBOARD */
+.container {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  background: #121212;
+  padding: 15px;
+  border-right: 1px solid #222;
 }
 
 input, button, select {
+  width: 100%;
   padding: 10px;
-  margin: 5px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 8px;
 }
 
+button {
+  background: #ff8c00;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* MAIN */
+.main {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* CARDS */
 .card {
-  background: #1b1b1b;
-  margin: 10px auto;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
   padding: 12px;
+  margin: 10px 0;
   border-radius: 12px;
-  max-width: 600px;
-  text-align: left;
+  backdrop-filter: blur(10px);
 }
 
 .badge {
-  background: orange;
+  background: #ff8c00;
   padding: 3px 8px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 11px;
+  color: black;
 }
 
-small { color: gray; }
-hr { border: 0.5px solid #333; }
+.stats {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.stat {
+  background: #1f1f1f;
+  padding: 10px;
+  border-radius: 10px;
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+}
+
+small { color: #aaa; }
+hr { border: 0.5px solid #222; }
 </style>
 </head>
 
 <body>
 
-<h1>🔥 AI Content Engine</h1>
+<header>🚀 AI Content Engine PRO Dashboard</header>
 
-<!-- BOARD CREATION -->
-<input id="boardName" placeholder="Create board">
-<button onclick="createBoard()">Create</button>
+<div class="container">
 
-<br>
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+<h3>📁 Boards</h3>
+
+<input id="boardName" placeholder="New board">
+<button onclick="createBoard()">Create Board</button>
 
 <select id="boardSelect"></select>
 
 <hr>
 
-<!-- GENERATOR -->
+<h3>⚡ Generator</h3>
+
 <input id="prompt" placeholder="Enter prompt">
 
 <button onclick="generateText()">Generate Text</button>
@@ -60,18 +123,38 @@ hr { border: 0.5px solid #333; }
 
 <hr>
 
+<h3>⏰ Schedule Post</h3>
+
+<input id="scheduleTime" type="datetime-local">
+<button onclick="schedulePost()">Schedule</button>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<h2>📊 Analytics Dashboard</h2>
+
+<div id="analytics" class="stats"></div>
+
+<h2>🧠 Content Feed</h2>
+
 <div id="output"></div>
+
+</div>
+</div>
 
 <script>
 
 // ---------------- DATABASE ----------------
-let db = JSON.parse(localStorage.getItem("ai_engine") || "{}");
+let db = JSON.parse(localStorage.getItem("ai_engine_pro") || "{}");
 
 // ---------------- SAVE ----------------
 function save() {
-  localStorage.setItem("ai_engine", JSON.stringify(db));
+  localStorage.setItem("ai_engine_pro", JSON.stringify(db));
   updateBoardSelect();
   render();
+  renderAnalytics();
 }
 
 // ---------------- BOARD ----------------
@@ -80,157 +163,162 @@ function createBoard() {
   if (!name) return;
 
   if (!db[name]) {
-    db[name] = {
-      posts: [],
-      views: 0,
-      created: new Date().toLocaleString()
-    };
+    db[name] = { posts: [], views: 0, created: Date.now() };
   }
 
   save();
 }
 
-// ---------------- BOARD SELECT ----------------
+// ---------------- SELECT ----------------
 function updateBoardSelect() {
-  let select = document.getElementById("boardSelect");
-  select.innerHTML = "";
+  let sel = document.getElementById("boardSelect");
+  sel.innerHTML = "";
 
   for (let b in db) {
     let opt = document.createElement("option");
     opt.value = b;
     opt.innerText = b;
-    select.appendChild(opt);
+    sel.appendChild(opt);
   }
 }
 
-// ---------------- VIRAL SCORE ----------------
-function viralScore(text) {
-  let score = 0;
-
-  if (text.toLowerCase().includes("ai")) score += 20;
-  if (text.toLowerCase().includes("free")) score += 15;
-  if (text.toLowerCase().includes("new")) score += 10;
-  if (text.length > 25) score += 10;
-
-  score += Math.floor(Math.random() * 50);
-
-  return Math.min(score, 100);
-}
-
-// ---------------- AI ENGINE ----------------
-function aiGenerate(prompt, type) {
-  let base = prompt.toUpperCase();
-
+// ---------------- AI ----------------
+function ai(prompt, type) {
   if (type === "image") {
-    return "🖼 IMAGE: " + base + " | ultra realistic | 4k | cinematic lighting";
+    return "🖼 AI IMAGE → " + prompt + " | cinematic | ultra realistic | 4k";
+  }
+  return "🧠 AI CONTENT → " + prompt + " | optimized for engagement & SEO";
+}
+
+// ---------------- VIRAL ----------------
+function viral() {
+  return Math.min(100, Math.floor(Math.random() * 100));
+}
+
+// ---------------- GENERATE ----------------
+function generateText() {
+  let p = prompt.value;
+  let b = boardSelect.value;
+  if (!p || !b) return;
+
+  db[b].posts.push({
+    type: "text",
+    content: ai(p, "text"),
+    views: 0,
+    viral: viral(),
+    time: Date.now()
+  });
+
+  save();
+}
+
+function generateImage() {
+  let p = prompt.value;
+  let b = boardSelect.value;
+  if (!p || !b) return;
+
+  db[b].posts.push({
+    type: "image",
+    content: ai(p, "image"),
+    views: 0,
+    viral: viral(),
+    time: Date.now()
+  });
+
+  save();
+}
+
+// ---------------- SCHEDULING ----------------
+function schedulePost() {
+  let p = prompt.value;
+  let b = boardSelect.value;
+  let t = new Date(scheduleTime.value).getTime();
+
+  if (!p || !b || !t) return;
+
+  db[b].posts.push({
+    type: "scheduled",
+    content: ai(p, "text"),
+    views: 0,
+    viral: viral(),
+    time: t,
+    status: "pending"
+  });
+
+  save();
+}
+
+// AUTO PUBLISH ENGINE
+setInterval(() => {
+  let now = Date.now();
+
+  for (let b in db) {
+    db[b].posts.forEach(p => {
+      if (p.status === "pending" && now >= p.time) {
+        p.status = "posted";
+      }
+    });
   }
 
-  return "🧠 AI POST: " + base + " → optimized for engagement, SEO, and viral reach";
-}
-
-// ---------------- GENERATE TEXT ----------------
-function generateText() {
-  let prompt = document.getElementById("prompt").value;
-  let board = document.getElementById("boardSelect").value;
-
-  if (!prompt || !board) return;
-
-  db[board].posts.push({
-    type: "text",
-    content: aiGenerate(prompt, "text"),
-    prompt,
-    views: 0,
-    viral: viralScore(prompt),
-    time: new Date().toLocaleString(),
-    status: "posted"
-  });
-
   save();
+}, 5000);
+
+// ---------------- ANALYTICS ----------------
+function renderAnalytics() {
+  let totalPosts = 0;
+  let totalViews = 0;
+
+  for (let b in db) {
+    totalPosts += db[b].posts.length;
+    totalViews += db[b].views;
+  }
+
+  analytics.innerHTML = `
+    <div class="stat">📦 Posts<br><b>${totalPosts}</b></div>
+    <div class="stat">👁 Views<br><b>${totalViews}</b></div>
+    <div class="stat">📁 Boards<br><b>${Object.keys(db).length}</b></div>
+  `;
 }
 
-// ---------------- GENERATE IMAGE ----------------
-function generateImage() {
-  let prompt = document.getElementById("prompt").value;
-  let board = document.getElementById("boardSelect").value;
-
-  if (!prompt || !board) return;
-
-  db[board].posts.push({
-    type: "image",
-    content: aiGenerate(prompt, "image"),
-    prompt,
-    views: 0,
-    viral: viralScore(prompt),
-    time: new Date().toLocaleString(),
-    status: "posted"
-  });
-
-  save();
-}
-
-// ---------------- VIEW SYSTEM ----------------
-function addView(board, index) {
-  db[board].posts[index].views++;
+// ---------------- VIEWS ----------------
+function addView(board, i) {
+  db[board].posts[i].views++;
   db[board].views++;
   save();
 }
 
-// ---------------- ANALYTICS ----------------
-function getStats(board) {
-  let b = db[board];
-  if (!b) return {};
-
-  let avg =
-    b.posts.reduce((a, p) => a + (p.viral || 0), 0) /
-    (b.posts.length || 1);
-
-  return {
-    views: b.views,
-    posts: b.posts.length,
-    avgViral: avg.toFixed(1)
-  };
-}
-
 // ---------------- RENDER ----------------
 function render() {
-  let out = document.getElementById("output");
-  out.innerHTML = "";
+  output.innerHTML = "";
 
-  for (let board in db) {
-    let b = db[board];
-    let stats = getStats(board);
+  for (let b in db) {
 
-    let div = document.createElement("div");
-    div.className = "card";
+    let box = document.createElement("div");
+    box.className = "card";
 
-    div.innerHTML = `
-      <h2>${board}</h2>
-      <small>Created: ${b.created}</small><br>
-      <small>Views: ${stats.views} | Posts: ${stats.posts} | Avg Viral: ${stats.avgViral}</small>
-      <hr>
-    `;
+    box.innerHTML = `<h3>${b}</h3><small>Posts: ${db[b].posts.length}</small><hr>`;
 
-    b.posts.forEach((p, i) => {
-      let badge = p.viral > 70 ? `<span class="badge">🔥 VIRAL</span>` : "";
+    db[b].posts.forEach((p, i) => {
 
-      div.innerHTML += `
-        ${badge}<br>
+      box.innerHTML += `
+        ${p.viral > 70 ? '<span class="badge">🔥 VIRAL</span>' : ''}
         <b>${p.type.toUpperCase()}</b><br>
         ${p.content}<br>
-        <small>${p.time}</small><br>
-        👁 Views: ${p.views}
-        <button onclick="addView('${board}', ${i})">+1 View</button>
+        <small>${p.status || "posted"}</small><br>
+        👁 ${p.views}
+        <button onclick="addView('${b}',${i})">+1 View</button>
         <hr>
       `;
     });
 
-    out.appendChild(div);
+    output.appendChild(box);
   }
 }
 
 // INIT
 updateBoardSelect();
 render();
+renderAnalytics();
 
 </script>
 
