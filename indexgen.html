@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AI Content Engine</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+  font-family: Arial;
+  background: #0d0d0d;
+  color: white;
+  text-align: center;
+}
+
+input, button, select {
+  padding: 10px;
+  margin: 5px;
+}
+
+.card {
+  background: #1b1b1b;
+  margin: 10px auto;
+  padding: 12px;
+  border-radius: 12px;
+  max-width: 600px;
+  text-align: left;
+}
+
+.badge {
+  background: orange;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+small { color: gray; }
+hr { border: 0.5px solid #333; }
+</style>
+</head>
+
+<body>
+
+<h1>🔥 AI Content Engine</h1>
+
+<!-- BOARD CREATION -->
+<input id="boardName" placeholder="Create board">
+<button onclick="createBoard()">Create</button>
+
+<br>
+
+<select id="boardSelect"></select>
+
+<hr>
+
+<!-- GENERATOR -->
+<input id="prompt" placeholder="Enter prompt">
+
+<button onclick="generateText()">Generate Text</button>
+<button onclick="generateImage()">Generate Image</button>
+
+<hr>
+
+<div id="output"></div>
+
+<script>
+
+// ---------------- DATABASE ----------------
+let db = JSON.parse(localStorage.getItem("ai_engine") || "{}");
+
+// ---------------- SAVE ----------------
+function save() {
+  localStorage.setItem("ai_engine", JSON.stringify(db));
+  updateBoardSelect();
+  render();
+}
+
+// ---------------- BOARD ----------------
+function createBoard() {
+  let name = document.getElementById("boardName").value;
+  if (!name) return;
+
+  if (!db[name]) {
+    db[name] = {
+      posts: [],
+      views: 0,
+      created: new Date().toLocaleString()
+    };
+  }
+
+  save();
+}
+
+// ---------------- BOARD SELECT ----------------
+function updateBoardSelect() {
+  let select = document.getElementById("boardSelect");
+  select.innerHTML = "";
+
+  for (let b in db) {
+    let opt = document.createElement("option");
+    opt.value = b;
+    opt.innerText = b;
+    select.appendChild(opt);
+  }
+}
+
+// ---------------- VIRAL SCORE ----------------
+function viralScore(text) {
+  let score = 0;
+
+  if (text.toLowerCase().includes("ai")) score += 20;
+  if (text.toLowerCase().includes("free")) score += 15;
+  if (text.toLowerCase().includes("new")) score += 10;
+  if (text.length > 25) score += 10;
+
+  score += Math.floor(Math.random() * 50);
+
+  return Math.min(score, 100);
+}
+
+// ---------------- AI ENGINE ----------------
+function aiGenerate(prompt, type) {
+  let base = prompt.toUpperCase();
+
+  if (type === "image") {
+    return "🖼 IMAGE: " + base + " | ultra realistic | 4k | cinematic lighting";
+  }
+
+  return "🧠 AI POST: " + base + " → optimized for engagement, SEO, and viral reach";
+}
+
+// ---------------- GENERATE TEXT ----------------
+function generateText() {
+  let prompt = document.getElementById("prompt").value;
+  let board = document.getElementById("boardSelect").value;
+
+  if (!prompt || !board) return;
+
+  db[board].posts.push({
+    type: "text",
+    content: aiGenerate(prompt, "text"),
+    prompt,
+    views: 0,
+    viral: viralScore(prompt),
+    time: new Date().toLocaleString(),
+    status: "posted"
+  });
+
+  save();
+}
+
+// ---------------- GENERATE IMAGE ----------------
+function generateImage() {
+  let prompt = document.getElementById("prompt").value;
+  let board = document.getElementById("boardSelect").value;
+
+  if (!prompt || !board) return;
+
+  db[board].posts.push({
+    type: "image",
+    content: aiGenerate(prompt, "image"),
+    prompt,
+    views: 0,
+    viral: viralScore(prompt),
+    time: new Date().toLocaleString(),
+    status: "posted"
+  });
+
+  save();
+}
+
+// ---------------- VIEW SYSTEM ----------------
+function addView(board, index) {
+  db[board].posts[index].views++;
+  db[board].views++;
+  save();
+}
+
+// ---------------- ANALYTICS ----------------
+function getStats(board) {
+  let b = db[board];
+  if (!b) return {};
+
+  let avg =
+    b.posts.reduce((a, p) => a + (p.viral || 0), 0) /
+    (b.posts.length || 1);
+
+  return {
+    views: b.views,
+    posts: b.posts.length,
+    avgViral: avg.toFixed(1)
+  };
+}
+
+// ---------------- RENDER ----------------
+function render() {
+  let out = document.getElementById("output");
+  out.innerHTML = "";
+
+  for (let board in db) {
+    let b = db[board];
+    let stats = getStats(board);
+
+    let div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <h2>${board}</h2>
+      <small>Created: ${b.created}</small><br>
+      <small>Views: ${stats.views} | Posts: ${stats.posts} | Avg Viral: ${stats.avgViral}</small>
+      <hr>
+    `;
+
+    b.posts.forEach((p, i) => {
+      let badge = p.viral > 70 ? `<span class="badge">🔥 VIRAL</span>` : "";
+
+      div.innerHTML += `
+        ${badge}<br>
+        <b>${p.type.toUpperCase()}</b><br>
+        ${p.content}<br>
+        <small>${p.time}</small><br>
+        👁 Views: ${p.views}
+        <button onclick="addView('${board}', ${i})">+1 View</button>
+        <hr>
+      `;
+    });
+
+    out.appendChild(div);
+  }
+}
+
+// INIT
+updateBoardSelect();
+render();
+
+</script>
+
+</body>
+</html>
