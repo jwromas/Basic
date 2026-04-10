@@ -1,54 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>AI Content Engine Pro</title>
+<title>AI Content Engine Blue</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 body {
   margin: 0;
   font-family: Arial;
-  background: radial-gradient(circle at top, #1a1a1a, #0a0a0a);
+  background: #071427;
   color: white;
 }
 
 /* HEADER */
 header {
-  padding: 20px;
+  background: #0b2a4a;
+  padding: 18px;
   text-align: center;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: bold;
-  background: #111;
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid #1b4d7a;
 }
 
-/* DASHBOARD */
+/* LAYOUT */
 .container {
   display: grid;
-  grid-template-columns: 300px 1fr;
-  height: 100vh;
+  grid-template-columns: 320px 1fr;
+  height: calc(100vh - 60px);
 }
 
 /* SIDEBAR */
 .sidebar {
-  background: #121212;
+  background: #0b1b2f;
   padding: 15px;
-  border-right: 1px solid #222;
+  border-right: 1px solid #1b4d7a;
 }
 
 input, button, select {
   width: 100%;
   padding: 10px;
   margin-top: 8px;
-  border: none;
   border-radius: 8px;
+  border: none;
+  outline: none;
+}
+
+input, select {
+  background: #102a46;
+  color: white;
 }
 
 button {
-  background: #ff8c00;
-  color: black;
+  background: #1e88ff;
+  color: white;
   font-weight: bold;
   cursor: pointer;
+}
+
+button:hover {
+  background: #4aa3ff;
 }
 
 /* MAIN */
@@ -59,46 +69,43 @@ button {
 
 /* CARDS */
 .card {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: #0f2a44;
+  border: 1px solid #1b4d7a;
   padding: 12px;
   margin: 10px 0;
   border-radius: 12px;
-  backdrop-filter: blur(10px);
 }
 
-.badge {
-  background: #ff8c00;
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 11px;
-  color: black;
-}
-
-.stats {
+.stat-box {
   display: flex;
   gap: 10px;
-  flex-wrap: wrap;
   margin-bottom: 15px;
 }
 
 .stat {
-  background: #1f1f1f;
+  flex: 1;
+  background: #0b1f36;
   padding: 10px;
   border-radius: 10px;
-  flex: 1;
-  min-width: 120px;
   text-align: center;
+  border: 1px solid #1b4d7a;
 }
 
-small { color: #aaa; }
-hr { border: 0.5px solid #222; }
+.badge {
+  background: #1e88ff;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+small { color: #9bb7d4; }
+hr { border: 0.5px solid #1b4d7a; }
 </style>
 </head>
 
 <body>
 
-<header>🚀 AI Content Engine PRO Dashboard</header>
+<header>💙 AI Content Engine BLUE PRO</header>
 
 <div class="container">
 
@@ -122,22 +129,41 @@ hr { border: 0.5px solid #222; }
 <button onclick="generateImage()">Generate Image</button>
 
 <hr>
+<hr>
 
-<h3>⏰ Schedule Post</h3>
+<h3>🖼 Image Preview</h3>
+<div id="previewBox" style="
+  width:100%;
+  height:160px;
+  background:#0b1f36;
+  border:1px solid #1e88ff;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#9bb7d4;
+  text-align:center;
+">
+No image generated
+</div>
+
+<button onclick="postPreview()">Post Preview</button>
+
+<h3>⏰ Schedule</h3>
 
 <input id="scheduleTime" type="datetime-local">
-<button onclick="schedulePost()">Schedule</button>
+<button onclick="schedulePost()">Schedule Post</button>
 
 </div>
 
 <!-- MAIN -->
 <div class="main">
 
-<h2>📊 Analytics Dashboard</h2>
+<h2>📊 Analytics</h2>
 
-<div id="analytics" class="stats"></div>
+<div class="stat-box" id="analytics"></div>
 
-<h2>🧠 Content Feed</h2>
+<h2>🧠 Feed</h2>
 
 <div id="output"></div>
 
@@ -147,12 +173,12 @@ hr { border: 0.5px solid #222; }
 <script>
 
 // ---------------- DATABASE ----------------
-let db = JSON.parse(localStorage.getItem("ai_engine_pro") || "{}");
+let db = JSON.parse(localStorage.getItem("blue_engine") || "{}");
 
 // ---------------- SAVE ----------------
 function save() {
-  localStorage.setItem("ai_engine_pro", JSON.stringify(db));
-  updateBoardSelect();
+  localStorage.setItem("blue_engine", JSON.stringify(db));
+  updateBoards();
   render();
   renderAnalytics();
 }
@@ -163,14 +189,18 @@ function createBoard() {
   if (!name) return;
 
   if (!db[name]) {
-    db[name] = { posts: [], views: 0, created: Date.now() };
+    db[name] = {
+      posts: [],
+      views: 0,
+      created: Date.now()
+    };
   }
 
   save();
 }
 
-// ---------------- SELECT ----------------
-function updateBoardSelect() {
+// ---------------- BOARD LIST ----------------
+function updateBoards() {
   let sel = document.getElementById("boardSelect");
   sel.innerHTML = "";
 
@@ -182,59 +212,82 @@ function updateBoardSelect() {
   }
 }
 
-// ---------------- AI ----------------
-function ai(prompt, type) {
-  if (type === "image") {
-    return "🖼 AI IMAGE → " + prompt + " | cinematic | ultra realistic | 4k";
-  }
-  return "🧠 AI CONTENT → " + prompt + " | optimized for engagement & SEO";
+// ---------------- HELPERS ----------------
+function getPrompt() {
+  return document.getElementById("prompt").value;
 }
 
-// ---------------- VIRAL ----------------
+function getBoard() {
+  return document.getElementById("boardSelect").value;
+}
+
+function getTime() {
+  return document.getElementById("scheduleTime").value;
+}
+
+// ---------------- AI ENGINE ----------------
+function ai(prompt, type) {
+  if (type === "image") {
+    return "🖼 AI IMAGE → " + prompt + " | ultra HD | cinematic | blue aesthetic";
+  }
+  return "🧠 AI TEXT → " + prompt + " | optimized for engagement & SEO";
+}
+
+// ---------------- VIRAL SCORE ----------------
 function viral() {
-  return Math.min(100, Math.floor(Math.random() * 100));
+  return Math.floor(Math.random() * 100);
 }
 
 // ---------------- GENERATE ----------------
 function generateText() {
-  let p = prompt.value;
-  let b = boardSelect.value;
-  if (!p || !b) return;
+  let p = getPrompt();
+  let b = getBoard();
+  if (!p || !b) return alert("Missing data");
 
   db[b].posts.push({
     type: "text",
     content: ai(p, "text"),
     views: 0,
     viral: viral(),
-    time: Date.now()
+    time: Date.now(),
+    status: "posted"
   });
 
   save();
 }
 
 function generateImage() {
-  let p = prompt.value;
-  let b = boardSelect.value;
-  if (!p || !b) return;
+  let p = getPrompt();
+  if (!p) return alert("Enter a prompt");
 
-  db[b].posts.push({
+  preview = {
     type: "image",
-    content: ai(p, "image"),
-    views: 0,
-    viral: viral(),
-    time: Date.now()
-  });
+    prompt: p,
+    // REAL VISUAL OUTPUT (no longer text-only)
+    url: "https://image.pollinations.ai/prompt/" + encodeURIComponent(p)
+  };
 
-  save();
+  document.getElementById("previewBox").innerHTML = `
+    <img src="${preview.url}" style="
+      width:100%;
+      height:160px;
+      object-fit:cover;
+      border-radius:10px;
+    " />
+    <div style="margin-top:5px; font-size:12px;">
+      ${p}
+    </div>
+  `;
 }
+
 
 // ---------------- SCHEDULING ----------------
 function schedulePost() {
-  let p = prompt.value;
-  let b = boardSelect.value;
-  let t = new Date(scheduleTime.value).getTime();
+  let p = getPrompt();
+  let b = getBoard();
+  let t = new Date(getTime()).getTime();
 
-  if (!p || !b || !t) return;
+  if (!p || !b || !t) return alert("Missing schedule data");
 
   db[b].posts.push({
     type: "scheduled",
@@ -265,18 +318,19 @@ setInterval(() => {
 
 // ---------------- ANALYTICS ----------------
 function renderAnalytics() {
-  let totalPosts = 0;
-  let totalViews = 0;
+  let posts = 0;
+  let views = 0;
+  let boards = Object.keys(db).length;
 
   for (let b in db) {
-    totalPosts += db[b].posts.length;
-    totalViews += db[b].views;
+    posts += db[b].posts.length;
+    views += db[b].views;
   }
 
-  analytics.innerHTML = `
-    <div class="stat">📦 Posts<br><b>${totalPosts}</b></div>
-    <div class="stat">👁 Views<br><b>${totalViews}</b></div>
-    <div class="stat">📁 Boards<br><b>${Object.keys(db).length}</b></div>
+  document.getElementById("analytics").innerHTML = `
+    <div class="stat">📦 Posts<br><b>${posts}</b></div>
+    <div class="stat">👁 Views<br><b>${views}</b></div>
+    <div class="stat">📁 Boards<br><b>${boards}</b></div>
   `;
 }
 
@@ -289,14 +343,15 @@ function addView(board, i) {
 
 // ---------------- RENDER ----------------
 function render() {
-  output.innerHTML = "";
+  let out = document.getElementById("output");
+  out.innerHTML = "";
 
   for (let b in db) {
 
     let box = document.createElement("div");
     box.className = "card";
 
-    box.innerHTML = `<h3>${b}</h3><small>Posts: ${db[b].posts.length}</small><hr>`;
+    box.innerHTML = `<h3>${b}</h3><small>${db[b].posts.length} posts</small><hr>`;
 
     db[b].posts.forEach((p, i) => {
 
@@ -304,19 +359,19 @@ function render() {
         ${p.viral > 70 ? '<span class="badge">🔥 VIRAL</span>' : ''}
         <b>${p.type.toUpperCase()}</b><br>
         ${p.content}<br>
-        <small>${p.status || "posted"}</small><br>
+        <small>${p.status}</small><br>
         👁 ${p.views}
         <button onclick="addView('${b}',${i})">+1 View</button>
         <hr>
       `;
     });
 
-    output.appendChild(box);
+    out.appendChild(box);
   }
 }
 
 // INIT
-updateBoardSelect();
+updateBoards();
 render();
 renderAnalytics();
 
